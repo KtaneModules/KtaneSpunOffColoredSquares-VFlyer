@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Isocolored Squares — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        @media print {
+            a[href]:after {
+                content: "";
+            }
+        }
+        .squeeze
+        {
+            padding-top: 0pt;
+            padding-bottom: 0pt;
+        }
+        .brother {
+            clear: both;
+            margin: 1em 0;
+            overflow: auto;
+        }
+        .brother > .component {
+            float: right;
+            margin-left: .5cm;
+        }
+        .brother > .component > img {
+            width: 3cm;
+        }
+        .brother > .explanation {
+            font-weight: bold;
+        }
+        .brother > .link {
+            font-size: 24pt;
+        }
+        .transitionDiagram
+        {
+            width: 100%;
+        }
+        .center
+        {
+            margin: auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-04">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Isocolored Squares</span>
+            </div>
+            <div class="page-content">
+                <img class="diagram" src="img/Component/Isocolored Squares.svg">
+                <h2>On the Subject of Isocolored Squares</h2>
+                <p class="flavour-text">Patterns encourage conformity. Conformity is the opposite of creativity. Break the pattern, and creativity shall flow freely.</p>
+                <p class="appendix-reference" id="appendix-reference">See Appendix of <span class="link"><a href="Colored%20Squares.html">Colored Squares</a></span> for identifying modules in Colored Squares family.</p>
+                <ul>
+                    <li>At the start, if there are not exactly three colors that occur only once, you are looking at a different module.</li>
+                    <li>To disarm the module, make no rules in the Pattern Index true.</li>
+                    <li>Pressing a square will cause that square to turn white and all its neighboring squares to change color according to the Transition Diagrams.</li>
+
+                    <li>To find the correct Transition Diagram, take the last digit of the serial number for the first move. After each move, the next Transition Diagram used will be the number of moves used, plus the last digit of the serial number, all modulo 10.</li>
+                    <li>If 15 moves have been made since the last reset and the module is not solved, the module will reset and a strike will be recorded.</li>
+                </ul>
+                <h3>Transition Diagrams</h3>
+                <table>
+                    <tr>
+                        <th>0</th>
+                        <th>1</th>
+                        <th>2</th>
+                        <th>3</th>
+                        <th>4</th>
+                    </tr>
+                    <tr>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%200.svg" alt="Transition Diagram 0"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%201.svg" alt="Transition Diagram 1"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%202.svg" alt="Transition Diagram 2"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%203.svg" alt="Transition Diagram 3"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%204.svg" alt="Transition Diagram 4"></td>
+                    </tr>
+                    <tr>
+                        <th>5</th>
+                        <th>6</th>
+                        <th>7</th>
+                        <th>8</th>
+                        <th>9</th>
+                    </tr>
+                    <tr>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%205.svg" alt="Transition Diagram 5"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%206.svg" alt="Transition Diagram 6"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%207.svg" alt="Transition Diagram 7"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%208.svg" alt="Transition Diagram 8"></td>
+                        <td class="center"><img class="transitionDiagram" src="img/Isocolored%20Squares/Color%20Mapping%20ID%209.svg" alt="Transition Diagram 9"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer">Page 1 of 2</div>
+        </div>
+        <div class="page page-bg-04">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Isocolored Squares</span>
+            </div>
+            <div class="page-content">
+                <h3>Pattern Index:</h3>
+                <ul>
+                <li class="squeeze">There are three colors with the same amount of squares.</li>
+                <li class="squeeze">All four neighbors of a square are the same color.*</li>
+                <li class="squeeze">There are an equal amount of blue and magenta squares.</li>
+                <li class="squeeze">There are an equal amount of red and yellow squares.</li>
+                <li class="squeeze">Two squares of the same color have a similar pattern of neighbors.*&dagger;</li>
+                <li class="squeeze">Any two rows have a similar pattern of squares.&dagger;</li>
+                <li class="squeeze">Any two columns have a similar pattern of squares.&dagger;</li>
+                </ul>
+                <p style="margin: 0%">&dagger; Flipped, rotated, and shifted patterns will also contribute to this rule. For example, if a sequence is RGYB and another sequence is BYGR, they are considered to be similar, because RYGB can be obtained by flipping BYGR.</p>
+                <p style="margin: 0%">*A tile that is considered to be neighboring to another must be immediately horizontally adjacent or vertically adjacent to the given tile. Wrap-around adjacencies are also considered. (I.E. B1 is adjacent to B4, A3 is adjacent to D3)</p>
+            </div>
+            <div class="page-footer relative-footer">Page 2 of 2</div>
+        </div>
+        <div class="page page-bg-04">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Isocolored Squares</span>
+            </div>
+            <div class="page-content">
+                <h2>Appendix: Identifying brethren of <cite>Colored Squares</cite> (Continued)</h2>
+
+                <div class="brother">
+                    <div class="component"><img src="img/Component/Overcolored Squares.svg"></div>
+                    <div class="explanation">If there are 16 squares of 1 color:</div>
+                    <div class="link"><a href="Overcolored Squares.html">Overcolored Squares</a></div>
+                </div>
+
+                <div class="brother">
+                    <div class="component"><img src="img/Component/Bicolored Squares.svg"></div>
+                    <div class="explanation">If there are 4 colors with exactly 4 squares each:</div>
+                    <div class="link"><a href="Bicolored Squares.html">Bicolored Squares</a></div>
+                </div>
+
+                <div class="brother">
+                    <div class="component"><img src="img/Component/Isocolored Squares.svg"></div>
+                    <div class="explanation">If three colors occur exactly once each:</div>
+                    <div class="link"><a href="Isocolored Squares.html">Isocolored Squares</a></div>
+                </div>
+            </div>
+            <div class="page-footer relative-footer">Page 2 of 2</div>
+        </div>
+    </div>
+</body>
+</html>
