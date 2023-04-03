@@ -222,6 +222,7 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 					solvePhaseActivated = false;
 					forgivedInputMistake = false;
 					PrepInitialPhase();
+					inputString = null;
 					return;
                 }
 				Log("Forgiven. Your board has been reset back to the last state from the last correct series of inputs.");

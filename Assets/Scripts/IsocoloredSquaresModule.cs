@@ -255,7 +255,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
                     (curY * 4) + (curX + 3) % 4,};
                 var currentPattern = curIDxScan.Select(a => currentSquareCombination[a]).ToArray();
                 var flippedPatternV = new[] { 0, 3, 2, 1 }.Select(a => currentPattern[a]).ToArray();
-                var flippedPatternH = new[] { 2, 1, 0, 3 }.Select(a => currentPattern[a]).ToArray();
+                //var flippedPatternH = new[] { 2, 1, 0, 3 }.Select(a => currentPattern[a]).ToArray();
                 var foundPattern = false;
                 foreach (SquareColor[] scanningPattern in patternsScanned)
                 {
@@ -436,6 +436,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
             yield return null;
         Strike();
         PrepModule();
+        disableInteractions = false;
     }
 
     protected override void ButtonPressed(int index)
