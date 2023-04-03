@@ -19,6 +19,6 @@ MonoBehaviour:
     with mod ideas by the respective authors:\nIsocolored Squares: PANPOTES\nBicolored
     Squares and Overcolored Squares: Blananas2\n\nImplemented by VFlyer\nColored Squares
     model by Timwi\r\nSounds by LeGeND."
-  version: 1.0.02
+  version: 1.0.03
   outputFolder: build
   previewImage: {fileID: 2800000, guid: bd5c1f4881f57d54481b44e4c8a7779a, type: 3}

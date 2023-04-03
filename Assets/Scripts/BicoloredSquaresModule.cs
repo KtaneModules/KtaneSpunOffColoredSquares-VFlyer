@@ -202,14 +202,14 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 							SetButtonBlack(x);
 						_colors[x] = _colors[x] == SquareColor.White ? SquareColor.Black : _colors[x];
 					}
-					Log("Inputted Morse string {0} corresponds to {1}, a valid character in the serial number.", inputString, validSerialNo.Single(a => morseCharacterReferences[a] == inputString));
+					Log("Inputted Morse string {0} corresponds to {1}, a valid character in the serial number.", inputString, validSerialNo.Distinct().Single(a => morseCharacterReferences[a] == inputString));
 					if (_colors.All(a => a == SquareColor.Black))
                     {
 						Log("You cleared the entire grid.", inputString);
 						ModulePassed();
 						return;
                     }
-					StartSquareColorsCoroutine(_colors, SquaresToRecolor.NonwhiteOnly, true);
+					StartSquareColorsCoroutine(_colors, delay: true);
 					inputString = "";
 					return;
 				}
@@ -225,7 +225,7 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 					inputString = null;
 					return;
                 }
-				Log("Forgiven. Your board has been reset back to the last state from the last correct series of inputs.");
+				Log("Forgiven. Your board has been reset back to the initial state.");
 				forgivedInputMistake = true;
 				Audio.PlaySoundAtTransform("colorreset", transform);
 				_colors = lastRememberedBoard.ToArray();
@@ -243,7 +243,7 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 						_colors[x] == dashColor ? (SquareColor)dotColor : _colors[x];
 				}
 				
-				StartSquareColorsCoroutine(_colors,delay: false);
+				StartSquareColorsCoroutine(_colors, delay: false);
 			}
 		}
 	}
