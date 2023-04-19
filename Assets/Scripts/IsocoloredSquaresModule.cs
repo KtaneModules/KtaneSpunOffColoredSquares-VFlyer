@@ -243,39 +243,62 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
         {
             var selectedIdxes = Enumerable.Range(0, 16).ToArray().Where(a => currentSquareCombination[a] == curColor);
             var patternsScanned = new List<SquareColor[]>();
+            // First grab each pattern displayed in this set.
             for (var idx = 0; idx < selectedIdxes.Count(); idx++)
             {
                 var curX = selectedIdxes.ElementAt(idx) % 4;
                 var curY = selectedIdxes.ElementAt(idx) / 4;
 
+                /* Diagram of squares obtained:
+                 *  0
+                 * 3X1
+                 *  2
+                 */
                 var curIDxScan = new[] {
                     (curY + 3) % 4 * 4 + curX,
                     (curY * 4) + (curX + 1) % 4,
                     (curY + 1) % 4 * 4 + curX,
                     (curY * 4) + (curX + 3) % 4,};
                 var currentPattern = curIDxScan.Select(a => currentSquareCombination[a]).ToArray();
+                patternsScanned.Add(currentPattern);
+            }
+            // Scan each pattern to see if they match or not.
+            for (int idx2 = 0; idx2 < patternsScanned.Count; idx2++)
+            {
+                SquareColor[] currentPattern = patternsScanned[idx2];
+                /* Normal Pattern:
+                 *  0
+                 * 3 1
+                 *  2
+                 * Flipped Vertically:
+                 *  0
+                 * 1 3
+                 *  2
+                 * Flipped Horizonally:
+                 *  2
+                 * 3 1
+                 *  0
+                 * Flipped Diagonally (TL-BR):
+                 *  3
+                 * 0 2
+                 *  1
+                 */
+
                 var flippedPatternV = new[] { 0, 3, 2, 1 }.Select(a => currentPattern[a]).ToArray();
                 //var flippedPatternH = new[] { 2, 1, 0, 3 }.Select(a => currentPattern[a]).ToArray();
                 var foundPattern = false;
-                foreach (SquareColor[] scanningPattern in patternsScanned)
+                for (int idx1 = idx2 + 1; idx1 < patternsScanned.Count; idx1++)
                 {
+                    SquareColor[] scanningPattern = patternsScanned[idx1];
                     for (var x = 0; x < 4; x++)
                     {
-                        var curPatternIdx = new[] { x, (x + 1) % 4, (x + 2) % 4, (x + 3) % 4 };
-                        if (curPatternIdx.Select(b => currentPattern[x]).SequenceEqual(scanningPattern) ||
-                            curPatternIdx.Select(b => flippedPatternV[x]).SequenceEqual(scanningPattern) ||
-                            curPatternIdx.Select(b => scanningPattern[x]).SequenceEqual(flippedPatternV) ||
-                            curPatternIdx.Select(b => scanningPattern[x]).SequenceEqual(currentPattern))
-                        {
-                            foundPattern = true;
-                        }
+                        var curPatternIdx = Enumerable.Range(0, 4).Select(a => (x + a) % 4).ToArray(); // new[] { x, (x + 1) % 4, (x + 2) % 4, (x + 3) % 4 };
+                        foundPattern |= Enumerable.Range(0, 4).All(a => currentPattern[curPatternIdx[a]] == scanningPattern[a]) ||
+                        Enumerable.Range(0, 4).All(a => flippedPatternV[curPatternIdx[a]] == scanningPattern[a]);
 
                     }
                 }
-                if (!foundPattern)
-                    patternsScanned.Add(currentPattern);
-                else
-                    uniquePatterns = false;
+                uniquePatterns &= !foundPattern;
             }
         }
         if (logStatus)
@@ -464,6 +487,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
             if (solutionIdxes.Any())
             {
                 debugPathSolution++;
+                LogDebug("Remaining possible sequences: [{0}]", solutionIdxes.Select(b => b.Select(a => a + 1).Join(",")).Join("];["));
                 Log("One solution sequence (from {2} remaining sequence(s)) after press #{1}: {0}", solutionIdxes.PickRandom().Skip(debugPathSolution).Select(a => QuickCoord(a)).Join(), movesMadeOnModule, solutionIdxes.Count());
             }
             else
@@ -486,15 +510,19 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
     }
     IEnumerator TwitchHandleForcedSolve()
     {
-        if (!solutionIdxes.Any())
-            ObtainPossibleSolutions(_colors);
         List<int> currentSolutionSet = null;
-        if (solutionIdxes.Any())
-            currentSolutionSet = solutionIdxes.Where(a => a.Count <= solutionIdxes.Select(b => b.Count).Min()).PickRandom();
-        else
+        var countedMovesSinceLastCheck = 1;
+        while (!solutionIdxes.Any())
         {
-            LogDebug("NO VALID PATHS HAVE BEEN DETECTED. FORCE SOLVING.");
+            LogDebug("NO VALID PATHS HAVE BEEN DETECTED. ATTEMPT #{0}. TRY PRESSING A BUTTON?", countedMovesSinceLastCheck);
+            //if (movesMadeOnModule + 3 >= 15)
+            //    movesMadeOnModule -= 5;
+            Buttons.PickRandom().OnInteract();
+            while (IsCoroutineActive)
+                yield return true;
+            countedMovesSinceLastCheck++;
         }
+        currentSolutionSet = solutionIdxes.Where(a => a.Count <= solutionIdxes.Select(b => b.Count).Min()).PickRandom();
         for (var x = 0; currentSolutionSet != null && x < currentSolutionSet.Count; x++)
         {
             Buttons[currentSolutionSet[x]].OnInteract();

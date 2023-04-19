@@ -225,7 +225,7 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 					inputString = null;
 					return;
                 }
-				Log("Forgiven. Your board has been reset back to the initial state.");
+				Log("Forgiven. Your board has been reset back to the initial solve state.");
 				forgivedInputMistake = true;
 				Audio.PlaySoundAtTransform("colorreset", transform);
 				_colors = lastRememberedBoard.ToArray();
@@ -247,7 +247,100 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 			}
 		}
 	}
+	List<string> validMorseRefs;
+	IEnumerator HandleDetectValidSequences()
+    {
+		var lengthsToValidSerialNo = new Dictionary<int, List<char>>();
+		foreach (var aChar in validSerialNo)
+        {
+			var curLength = morseCharacterReferences[aChar].Length;
+			if (lengthsToValidSerialNo.ContainsKey(curLength))
+            {
+				var relevantItem = lengthsToValidSerialNo[curLength];
+				relevantItem.Add(aChar);
+            }
+			else
+            {
+				var newCharList = new List<char> { aChar };
+				lengthsToValidSerialNo.Add(curLength, newCharList);
+            }
+        }
 
+		if (validMorseRefs == null)
+			validMorseRefs = new List<string>();
+		else
+			validMorseRefs.Clear();
+		//var nonBlackCounts = _colors.Count(a => a != SquareColor.Black);
+		var dotCountsReq = _colors.Count(a => a == dotColor);
+		var dashCountsReq = _colors.Count(a => a == dashColor);
+		var filteredPossibleCombinations = possibleLengths.Where(a => a.Sum() == dotCountsReq + dashCountsReq);
+		foreach (var validCombination in filteredPossibleCombinations)
+        {
+			// Part 1: generate all possible combinations for that specific instance.
+			var currentCombinationBatch = new List<IEnumerable<int>> { new List<int>() };
+			for (var x = 0; x < validCombination.Count(); x++)
+            {
+				var nextCombinationBatch = new List<IEnumerable<int>>();
+				foreach (var curCombo in currentCombinationBatch)
+                {
+					var nonOmmittedVals = validCombination.ToList();
+					foreach (var aVal in curCombo)
+						nonOmmittedVals.Remove(aVal);
+					foreach (var aVal in nonOmmittedVals)
+					{
+						var nextCombination = curCombo.Concat(new[] { aVal });
+						if (!nextCombinationBatch.Any(a => a.SequenceEqual(nextCombination)))
+							nextCombinationBatch.Add(nextCombination);
+					}
+					yield return null;
+                }
+				currentCombinationBatch = nextCombinationBatch;
+				yield return null;
+			}
+			// Part 2: Using those combinations, determine a series of characters within those restrictions that meet the amount of dots and dashes on the module, accounting for inversions.
+			foreach (var aCombo in currentCombinationBatch)
+            {
+				var maxCountsAll = aCombo.Select(a => lengthsToValidSerialNo[a].Count);
+				var curCountsAll = new int[aCombo.Count()];
+				var curPointerIdx = 0;
+				do
+				{
+					// Check if the current combination is valid...
+					var curMorse = Enumerable.Range(0, aCombo.Count()).Select(a => morseCharacterReferences[lengthsToValidSerialNo[aCombo.ElementAt(a)][curCountsAll[a]]]).Join();
+					var dotCountsCur = 0;
+					var dashCountsCur = 0;
+					var theoryInvertState = false;
+					for (var p = 0; p < curMorse.Length; p++)
+                    {
+						if (".-".Contains(curMorse[p]))
+                        {
+							if (theoryInvertState ^ curMorse[p] == '.')
+								dotCountsCur++;
+							else
+								dashCountsCur++;
+
+							theoryInvertState ^= true;
+                        }
+                    }
+					if (dotCountsCur == dotCountsReq && dashCountsCur == dashCountsReq)
+						validMorseRefs.Add(curMorse);
+				increment:
+					if (curPointerIdx >= maxCountsAll.Count()) break;
+					curCountsAll[curPointerIdx]++;
+					if (curCountsAll[curPointerIdx] >= maxCountsAll.ElementAt(curPointerIdx))
+					{
+						curCountsAll[curPointerIdx] = 0;
+						curPointerIdx++;
+						goto increment;
+					}
+					curPointerIdx = 0;
+					yield return null;
+				}
+				while (curPointerIdx < maxCountsAll.Count());
+            }
+		}
+		yield break;
+    }
 	IEnumerator TwitchHandleForcedSolve()
     {
 		if (!solvePhaseActivated)
@@ -270,8 +363,57 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
         {
 			while (IsCoroutineActive)
 				yield return true;
+			if ((inputString ?? "").Any())
+            {
+				if (!validSerialNo.Any(a => morseCharacterReferences[a].StartsWith(inputString)))
+					forgivedInputMistake = false;
+				var whiteSquareIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == SquareColor.White);
+				Buttons[whiteSquareIdxes.PickRandom()].OnInteract();
 
+				while (IsCoroutineActive)
+					yield return true;
+			}
+			if ("ET".All(a => validSerialNo.Contains(a)))
+			{
+				var idxesNonBlack = Enumerable.Range(0, 16).Where(a => _colors[a] != SquareColor.Black);
+				for (var x = 0;x < idxesNonBlack.Count(); x++)
+                {
+					Buttons[idxesNonBlack.ElementAt(x)].OnInteract();
+					while (IsCoroutineActive)
+						yield return true;
+					Buttons[idxesNonBlack.ElementAt(x)].OnInteract();
+					while (IsCoroutineActive)
+						yield return true;
+				}
 
+				yield break;
+			}
+			
+			var solutionDetector = StartCoroutine(HandleDetectValidSequences());
+			while (validMorseRefs == null || !validMorseRefs.Any())
+				yield return true;
+			StopCoroutine(solutionDetector);
+			var selectedMorseCode = validMorseRefs.PickRandom() + " ";
+			for (var x = 0; x < selectedMorseCode.Length; x++)
+            {
+				while (IsCoroutineActive)
+					yield return true;
+				switch (selectedMorseCode[x])
+                {
+					case ' ':
+						var whiteColorIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == SquareColor.White);
+						Buttons[whiteColorIdxes.PickRandom()].OnInteract();
+						break;
+					case '.':
+						var dotColorIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == dotColor);
+						Buttons[dotColorIdxes.PickRandom()].OnInteract();
+						break;
+					case '-':
+						var dashColorIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == dashColor);
+						Buttons[dashColorIdxes.PickRandom()].OnInteract();
+						break;
+				}
+            }
         }
 
     }
