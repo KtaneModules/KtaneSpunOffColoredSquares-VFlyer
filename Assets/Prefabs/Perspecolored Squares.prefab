@@ -155,8 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: -119419473, guid: 45b809be76fd7a3468b6f517bced6f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ModuleType: PerspecoloredSquaresModule
-  ModuleDisplayName: Perspecolored Squares
+  ModuleType: PerspecticoloredSquaresModule
+  ModuleDisplayName: Perspecticolored Squares
   RequiresTimerVisibility: 0
 --- !u!114 &114915174687690376
 MonoBehaviour:
@@ -174,11 +174,11 @@ MonoBehaviour:
   ColorblindMode: {fileID: 114232496700057378}
   debugRotationTxt: {fileID: 0}
   possibleViewAngles:
-  - {x: 135, y: 0, z: 135}
+  - {x: 120, y: 0, z: 120}
   - {x: 90, y: 0, z: 135}
-  - {x: 45, y: 0, z: 135}
+  - {x: 60, y: 0, z: 120}
   - {x: 45, y: 0, z: 90}
-  - {x: 45, y: 0, z: 45}
+  - {x: 60, y: 0, z: 60}
   - {x: 90, y: 0, z: 45}
-  - {x: 135, y: 0, z: 45}
+  - {x: 120, y: 0, z: 60}
   - {x: 135, y: 0, z: 90}

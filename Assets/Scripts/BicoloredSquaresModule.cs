@@ -367,6 +367,27 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
             {
 				if (!validSerialNo.Any(a => morseCharacterReferences[a].StartsWith(inputString)))
 					forgivedInputMistake = false;
+				else
+                {
+					var selectedMorseRef = validSerialNo.Select(a => morseCharacterReferences[a]).Where(a => a.StartsWith(inputString)).PickRandom();
+					for (var x = inputString.Length; x < selectedMorseRef.Length; x++)
+					{
+						switch (selectedMorseRef[x])
+						{
+							case '.':
+								var dotColorIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == dotColor);
+								Buttons[dotColorIdxes.PickRandom()].OnInteract();
+								break;
+							case '-':
+								var dashColorIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == dashColor);
+								Buttons[dashColorIdxes.PickRandom()].OnInteract();
+								break;
+						}
+						yield return new WaitForSeconds(0.1f);
+						while (IsCoroutineActive)
+							yield return true;
+					}
+                }
 				var whiteSquareIdxes = Enumerable.Range(0, 16).Where(a => _colors[a] == SquareColor.White);
 				Buttons[whiteSquareIdxes.PickRandom()].OnInteract();
 
@@ -376,12 +397,14 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 			if ("ET".All(a => validSerialNo.Contains(a)))
 			{
 				var idxesNonBlack = Enumerable.Range(0, 16).Where(a => _colors[a] != SquareColor.Black);
-				for (var x = 0;x < idxesNonBlack.Count(); x++)
+				for (var x = 0; x < idxesNonBlack.Count(); x++)
                 {
 					Buttons[idxesNonBlack.ElementAt(x)].OnInteract();
+					yield return new WaitForSeconds(0.1f);
 					while (IsCoroutineActive)
 						yield return true;
 					Buttons[idxesNonBlack.ElementAt(x)].OnInteract();
+					yield return new WaitForSeconds(0.1f);
 					while (IsCoroutineActive)
 						yield return true;
 				}
@@ -389,8 +412,9 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 				yield break;
 			}
 			
-			var solutionDetector = StartCoroutine(HandleDetectValidSequences());
-			while (validMorseRefs == null || !validMorseRefs.Any())
+			var solutionDetector = HandleDetectValidSequences();
+			StartCoroutine(solutionDetector);
+			while ((validMorseRefs == null || !validMorseRefs.Any()) && solutionDetector.MoveNext())
 				yield return true;
 			StopCoroutine(solutionDetector);
 			var selectedMorseCode = validMorseRefs.PickRandom() + " ";
@@ -413,6 +437,7 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 						Buttons[dashColorIdxes.PickRandom()].OnInteract();
 						break;
 				}
+				yield return new WaitForSeconds(0.1f);
             }
         }
 

@@ -1,0 +1,18 @@
+{
+  "Compatibility": "Compatible",
+  "Contributors": {
+    "Developer": [ "VFlyer" ],
+    "Idea": [ "Blananas2" ]
+  },
+  "DefuserDifficulty": "Easy",
+  "Description": "After pressing 2 squares of different colors, determine a series of presses based on the Morse representation of each character in the serial number.",
+  "ExpertDifficulty": "Hard",
+  "ModuleID": "BicoloredSquaresModule",
+  "Name": "Bicolored Squares",
+  "Origin": "Mods",
+  "Published": "2023-04-02",
+  "SortKey": "BICOLOREDSQUARES",
+  "SourceUrl": "https://github.com/VFlyer/KtaneSpunOffColoredSquares",
+  "SteamID": "2955439960",
+  "Type": "Regular"
+}

@@ -431,10 +431,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 114915174687690376, guid: a5a41520e179d4a4eaad008f87d66ad0,
-        type: 2}
-      propertyPath: debugRotationTxt
-      value: 
+    - target: {fileID: 1291400230762094, guid: a5a41520e179d4a4eaad008f87d66ad0, type: 2}
+      propertyPath: m_Name
+      value: Perspecticolored Squares
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a5a41520e179d4a4eaad008f87d66ad0, type: 2}

@@ -58,6 +58,7 @@ public class PerspecoloredSquaresScript : ColoredSquaresModuleBase {
     {
         var storedRememberedStateRot = displayAltColors;
         var storedIdxCount = curIdxPressList;
+        //int?[] possibleIdxes = ((IEnumerable<int?>)(Enumerable.Range(0, 16).Where(a => _colors[a] != altSquareColors[a]))).ToArray().Shuffle();
         while (IsCoroutineActive)
             yield return null;
         while (curIdxPressList == storedIdxCount)
