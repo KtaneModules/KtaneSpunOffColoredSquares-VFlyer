@@ -146,7 +146,25 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 		Log("One of expected Morse inputs to transmit (spaces being to press the white tile after each input): \"{0}\"", orderSelected.Select(a => morseCharacterReferences[a]).Join(" "));
 		solvePhaseActivated = true;
 	}
-
+	void HandleForgiveMistake()
+    {
+		if (forgivedInputMistake)
+		{
+			Log("You already have been forgiven once since the last reset. I can't forgive you again.");
+			Strike();
+			solvePhaseActivated = false;
+			forgivedInputMistake = false;
+			PrepInitialPhase();
+			inputString = null;
+			return;
+		}
+		Log("Forgiven. Your board has been reset back to the initial solve state.");
+		forgivedInputMistake = true;
+		Audio.PlaySoundAtTransform("colorreset", transform);
+		_colors = lastRememberedBoard.ToArray();
+		StartSquareColorsCoroutine(_colors);
+		inputString = "";
+	}
 
 	protected override void ButtonPressed(int index)
 	{
@@ -200,6 +218,8 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 					{
 						if (_colors[x] != SquareColor.White)
 							SetButtonBlack(x);
+						else
+							SetButtonColor(x, SquareColor.White);
 						_colors[x] = _colors[x] == SquareColor.White ? SquareColor.Black : _colors[x];
 					}
 					Log("Inputted Morse string {0} corresponds to {1}, a valid character in the serial number.", inputString, validSerialNo.Distinct().Single(a => morseCharacterReferences[a] == inputString));
@@ -209,28 +229,38 @@ public class BicoloredSquaresModule : ColoredSquaresModuleBase {
 						ModulePassed();
 						return;
                     }
+					// Checker for detecting a valid character in the serial number. This only checks for 1 character lengths.
+					var inputPossible = false;
+					var dotColorCountsExp = _colors.Count(a => a == dotColor);
+					var dashColorCountsExp = _colors.Count(a => a == dashColor);
+					foreach (var validChar in validSerialNo)
+                    {
+						var curMorseRef = morseCharacterReferences[validChar];
+						var dotCountCurChar = 0;
+						var dashCountCurChar = 0;
+						for (var x = 0; x < curMorseRef.Length; x++)
+                        {
+							if (curMorseRef[x] == '.' ^ x % 2 == 1)
+								dotCountCurChar++;
+							else
+								dashCountCurChar++;
+						}
+						inputPossible |= dotCountCurChar <= dotColorCountsExp && dashColorCountsExp >= dashCountCurChar;
+					}
+					if (!inputPossible)
+                    {
+						Log("Unfortunately, it is no longer possible to get a valid character in the serial number corresponding to the current board.");
+						Log("{0} {1} square(s) and {2} {3} square(s) remaining caused this condition to fail.", dotColorCountsExp, dotColor, dashColorCountsExp, dashColor);
+						HandleForgiveMistake();
+						return;
+                    }
 					StartSquareColorsCoroutine(_colors, delay: true);
 					inputString = "";
 					return;
 				}
 
 				Log("Inputted Morse string {0} does not correctly correspond to a valid serial number character.", inputString);
-				if (forgivedInputMistake)
-                {
-					Log("You already have been forgiven once since the last reset. I can't forgive you again.");
-					Strike();
-					solvePhaseActivated = false;
-					forgivedInputMistake = false;
-					PrepInitialPhase();
-					inputString = null;
-					return;
-                }
-				Log("Forgiven. Your board has been reset back to the initial solve state.");
-				forgivedInputMistake = true;
-				Audio.PlaySoundAtTransform("colorreset", transform);
-				_colors = lastRememberedBoard.ToArray();
-				StartSquareColorsCoroutine(_colors);
-				inputString = "";
+				HandleForgiveMistake();
             }
 			else if (_colors[index] != SquareColor.Black)
 			{
