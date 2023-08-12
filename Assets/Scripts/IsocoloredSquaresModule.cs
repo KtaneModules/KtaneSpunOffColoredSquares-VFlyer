@@ -11,6 +11,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
 
 	public KMBombInfo bombInfo;
 	public override string Name { get { return "Isocolored Squares"; } }
+    const int maxMovesAllowed = 5;
     int curIdxTransition, movesMadeOnModule, debugPathSolution;
     bool disableInteractions;
     List<List<int>> solutionIdxes = new List<List<int>>();
@@ -149,8 +150,8 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
             solutionIdxes.Clear();
             possibleColors.Shuffle();
             // Generate a puzzle with the following conditions, 3 colors occuring exactly 1, 2 colors occuring at least twice (to avoid conflicts with Discolored Squares).
-            var opposingCount = Random.Range(0, 10);
-            var countSets = new[] { 1, 1, 1, 2 + opposingCount, 2 + (9 - opposingCount) };
+            var opposingCount = Enumerable.Range(0, 7).Where(a => a != 1 && 13 - a != 1).PickRandom();
+            var countSets = new[] { 1, 1, 1, opposingCount, 13 - opposingCount };
             for (var x = 0; x < initialSquareColors.Length && countSets.Sum() > 0; x++)
             {
                 var currentIdx = Enumerable.Range(0, countSets.Length).Where(a => countSets[a] > 0).PickRandom();
@@ -447,7 +448,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
         StartSquareColorsCoroutine(_colors, SquaresToRecolor.All);
         while (IsCoroutineActive)
             yield return null;
-        StartSquareColorsCoroutine(Enumerable.Repeat(SquareColor.Black,16).ToArray(), SquaresToRecolor.All);
+        StartSquareColorsCoroutine(Enumerable.Repeat(SquareColor.Black, 16).ToArray(), SquaresToRecolor.All);
         while (IsCoroutineActive)
             yield return null;
         ModulePassed();
@@ -474,9 +475,9 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
         StartSquareColorsCoroutine(_colors, SquaresToRecolor.All);
         if (AnyRulesValid(_colors, true))
         {
-            if (movesMadeOnModule >= 15)
+            if (movesMadeOnModule >= maxMovesAllowed)
             {
-                Log("At least 15 moves have been made since the last reset. And the module is not solved. Starting over...");
+                Log("At least {0} moves have been made since the last reset. And the module is not solved. Starting over...", maxMovesAllowed);
                 disableInteractions = true;
                 StartCoroutine(AnimateStrikeAnim());
                 return;
@@ -493,9 +494,12 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
             else
             {
                 debugPathSolution = 0;
-                ObtainPossibleSolutions(_colors, Mathf.Min(3, 15 - movesMadeOnModule));
+                ObtainPossibleSolutions(_colors, Mathf.Min(3, maxMovesAllowed - movesMadeOnModule));
                 if (solutionIdxes.Any())
+                {
+                    LogDebug("New possible shortest sequences: [{0}]", solutionIdxes.Select(b => b.Select(a => a + 1).Join(",")).Join("];["));
                     Log("Deviated from generated possible solutions. One solution sequence (from {2} detected shortest possible sequence(s)) after press #{1}: {0}", solutionIdxes.PickRandom().Select(a => QuickCoord(a)).Join(), movesMadeOnModule, solutionIdxes.Count());
+                }
                 else
                     Log("Deviated from generated possible solutions. And there were no possible sequences left after press #{0}. Might be done for.", movesMadeOnModule);
             }
@@ -515,7 +519,7 @@ public class IsocoloredSquaresModule : ColoredSquaresModuleBase {
         while (!solutionIdxes.Any())
         {
             LogDebug("NO VALID PATHS HAVE BEEN DETECTED. ATTEMPT #{0}. TRY PRESSING A BUTTON?", countedMovesSinceLastCheck);
-            //if (movesMadeOnModule + 3 >= 15)
+            //if (movesMadeOnModule + 3 >= maxMovesAllowed)
             //    movesMadeOnModule -= 5;
             Buttons.PickRandom().OnInteract();
             while (IsCoroutineActive)

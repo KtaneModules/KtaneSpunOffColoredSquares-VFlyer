@@ -17,8 +17,9 @@ MonoBehaviour:
   description: "There is order in chaos. A pattern in the colors. Find it, and all
     will become clear.\r\n\r\nA collection of 4 spun-off Colored Squares variants,
     with mod ideas by the respective authors:\nIsocolored Squares and Perspecticolored
-    Squares: PANPOTES\nBicolored Squares and Overcolored Squares: Blananas2\n\nImplemented
+    Squares: PANPOTES\nBicolored Squares and Overcolored Squares: Blananas2\nThe original
+    Colored Squares variants can be found [url=https://steamcommunity.com/sharedfiles/filedetails/?id=805590147]here.[/url]\nImplemented
     by VFlyer\nColored Squares model by Timwi\r\nSounds by LeGeND."
-  version: 1.1
+  version: 1.1.2
   outputFolder: build
   previewImage: {fileID: 2800000, guid: c7d979ebaff7566469b8b8b79d1ca8e2, type: 3}
