@@ -186,11 +186,11 @@ public class PerspecoloredSquaresScript : ColoredSquaresModuleBase {
         if (debugRotationTxt != null)
         {
             debugRotationTxt.text = string.Format("{0}\n{1}", idxViewAngleShow, combinedAngleView.ToString());
-            debugRotationTxt.color = selectedViewAngles.Any(a => CheckEularAnglesWithinMarginOfError(a, combinedAngleView, 10f)) ? Color.green : Color.white;
+            debugRotationTxt.color = selectedViewAngles.Any(a => CheckEularAnglesWithinMarginOfError(a, combinedAngleView, 15f)) ? Color.green : Color.white;
         }
         if (!_isSolved)
         {
-            idxViewAngleShow = Enumerable.Range(1, selectedViewAngles.Length).FirstOrDefault(a => CheckEularAnglesWithinMarginOfError(selectedViewAngles[a - 1], combinedAngleView, 10f));
+            idxViewAngleShow = Enumerable.Range(1, selectedViewAngles.Length).FirstOrDefault(a => CheckEularAnglesWithinMarginOfError(selectedViewAngles[a - 1], combinedAngleView, 15f));
         }
     }
 
