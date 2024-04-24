@@ -241,7 +241,7 @@ public class PerspecoloredSquaresScript : ColoredSquaresModuleBase {
         
         var solutionCombos = new List<KeyValuePair<int, List<int>>>();
         var curCombos = Enumerable.Range(0, allPossibleCombos.Count).Select(a => new KeyValuePair<int, List<int>>(a, new List<int> { 0 }));
-        // KeyValuePair has the idx for its combination, and 
+        // KeyValuePair has the idx for its combination, and all potential moves.
         while (curCombos.Any())
         {
             var nextCombos = new List<KeyValuePair<int, List<int>>>();
@@ -359,6 +359,14 @@ public class PerspecoloredSquaresScript : ColoredSquaresModuleBase {
 
         return absDiffX * absDiffX + absDiffY * absDiffY + absDiffZ * absDiffZ <= errorMargin * errorMargin;
     }
+    float GetErrorEularAngles(Vector3 firstVector, Vector3 secondVector)
+    {
+        var absDiffX = Mathf.Abs(firstVector.x - secondVector.x);
+        var absDiffY = Mathf.Abs(firstVector.y - secondVector.y);
+        var absDiffZ = Mathf.Abs(firstVector.z - secondVector.z);
+
+        return absDiffX * absDiffX + absDiffY * absDiffY + absDiffZ * absDiffZ;
+    }
 
     // Update is called once per frame
     void Update () {
@@ -372,7 +380,16 @@ public class PerspecoloredSquaresScript : ColoredSquaresModuleBase {
         }
         if (!_isSolved)
         {
-            idxViewAngleShow = Enumerable.Range(1, selectedViewAngles.Length).FirstOrDefault(a => CheckEularAnglesWithinMarginOfError(selectedViewAngles[a - 1], combinedAngleView, 15f));
+            var idxesWithinMarginOfError = Enumerable.Range(1, selectedViewAngles.Length).Where(a => CheckEularAnglesWithinMarginOfError(selectedViewAngles[a - 1], combinedAngleView, 15f));
+            // Get all idxes that match within a margin of error.
+            if (idxesWithinMarginOfError.Count() > 1)
+            {
+                var errorMargins = idxesWithinMarginOfError.Select(a => GetErrorEularAngles(selectedViewAngles[a - 1], combinedAngleView));
+                idxViewAngleShow = idxesWithinMarginOfError.ElementAt(errorMargins.IndexOf(a => a <= errorMargins.Min()));
+                // Get the idx that is closest to the desired direction if there are multiples.
+            }
+            else
+                idxViewAngleShow = idxesWithinMarginOfError.SingleOrDefault();
         }
     }
 
